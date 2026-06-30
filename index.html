@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manusia, Fitrah, dan Piala Dunia</title>
+    
+    <!-- External CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Tone.js for high-fidelity audio synthesis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'dark-bg': '#020617',
+                        'dark-slate': '#0f172a',
+                        'accent-gold': '#f59e0b',
+                        'accent-gold-light': '#fef08a',
+                        'accent-emerald': '#10b981',
+                        'accent-emerald-light': '#a7f3d0',
+                        'accent-red': '#ef4444'
+                    },
+                    backgroundImage: {
+                        'radial-glow': 'radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 60%)',
+                        'emerald-glow': 'radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 60%)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(30, 41, 59, 0.5);
+            border-color: rgba(245, 158, 11, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Slide Transition Animations */
+        .slide-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(30px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .slide.exit {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-30px);
+        }
+
+        /* Micro-animations */
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .pulse-gold {
+            animation: subtle-pulse 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar for local boxes */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="antialiased select-none h-full w-full flex flex-col justify-between overflow-hidden">
+
+    <!-- AUDIO INTERLOCK SCREEN (Required by browsers before playing synthesizer audio) -->
+    <div id="audio-overlay" class="fixed inset-0 bg-dark-bg/95 z-50 flex flex-col items-center justify-center p-6 text-center transition-all duration-500">
+        <div class="max-w-md glass-panel p-8 rounded-2xl border border-accent-gold/20 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent-gold/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-accent-emerald/10 rounded-full blur-3xl"></div>
+            
+            <i class="fas fa-headphones-alt text-5xl text-accent-gold mb-6 pulse-gold"></i>
+            <h2 class="text-3xl font-bold font-serif mb-3 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-accent-gold via-yellow-200 to-white">
+                Audio Interaktif
+            </h2>
+            <p class="text-slate-300 text-sm mb-8 leading-relaxed">
+                Modul ini dilengkapi dengan instrumen audio sintetis adaptif yang memicu stimulasi fokus dan emosi di setiap perpindahan materi. Gunakan earphone untuk kualitas visual-audio terbaik.
+            </p>
+            <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-accent-gold to-yellow-500 rounded-xl font-bold text-dark-bg shadow-lg hover:shadow-accent-gold/20 hover:scale-[1.02] transition-all duration-300">
+                Mulai Pembelajaran <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- DECORATIVE BACKGROUND GLOW -->
+    <div class="absolute inset-0 bg-radial-glow -z-10 pointer-events-none"></div>
+
+    <!-- HEADER / NAVIGATION HUD -->
+    <header class="w-full max-h-20 px-6 py-4 flex items-center justify-between border-b border-white/5 bg-dark-bg/50 backdrop-blur-md relative z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-accent-gold to-amber-500 flex items-center justify-center shadow-lg">
+                <i class="fas fa-brain text-dark-bg font-bold text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xs md:text-sm uppercase tracking-widest text-accent-gold">Fitrah & Esensi</h1>
+                <p class="text-xs text-slate-400 font-medium hidden md:block">Piala Dunia dalam Perspektif Keimanan</p>
+            </div>
+        </div>
+        
+        <!-- Center Progress Indicator -->
+        <div class="hidden md:flex items-center gap-2">
+            <span class="text-xs text-slate-400">Kemajuan:</span>
+            <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="top-progress-bar" class="h-full bg-gradient-to-r from-accent-gold to-accent-emerald transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="top-progress-text" class="text-xs font-bold text-accent-gold">0%</span>
+        </div>
+
+        <!-- Mute and Restart Controls -->
+        <div class="flex items-center gap-3">
+            <button id="mute-btn" class="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-all" title="Toggle Suara">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="reset-btn" class="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-all" title="Mulai Ulang">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- SLIDES CONTENT CONTAINER (NO SCROLL VIEWPORT) -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-6 relative overflow-hidden flex flex-col justify-center">
+        <div class="slide-container" id="slide-container">
+            
+            <!-- SLIDE 1: INTRO -->
+            <div class="slide active" data-slide="1">
+                <div class="max-w-3xl mx-auto text-center space-y-6">
+                    <span class="px-3 py-1 text-xs font-semibold bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-full inline-block">MANUSIA & MAKNA</span>
+                    <h2 class="text-4xl md:text-6xl font-extrabold font-serif leading-tight">
+                        Manusia, Fitrah,<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold via-yellow-200 to-amber-500">dan Piala Dunia</span>
+                    </h2>
+                    <p class="text-lg text-slate-300 font-light max-w-xl mx-auto leading-relaxed">
+                        Fenomena global yang menguras air mata dan emosi. Apakah ini hanya tentang si kulit bundar, atau pencarian terdalam eksistensi manusia?
+                    </p>
+                    <div class="pt-6">
+                        <button onclick="changeSlide(1)" class="px-8 py-3.5 bg-gradient-to-r from-accent-emerald to-emerald-600 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.03] transition-all">
+                            Mulai Eksplorasi <i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: MENGAPA MENANGIS? -->
+            <div class="slide" data-slide="2">
+                <div class="grid md:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+                    <div class="md:col-span-5 space-y-4">
+                        <span class="text-xs font-bold text-accent-gold uppercase tracking-widest">Fisika VS Jiwa</span>
+                        <h3 class="text-3xl font-bold font-serif leading-snug">Mengapa Kita Bisa Menangis Karena Sebuah Gol?</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Secara hukum fisika murni, peristiwa sepak bola sangatlah sederhana dan hampa emosi materiil.
+                        </p>
+                        <div class="glass-card p-4 rounded-xl border border-white/5 space-y-2">
+                            <div class="flex items-center gap-3 text-sm text-slate-400">
+                                <i class="far fa-circle-play text-accent-gold"></i>
+                                <span>Bola hanya berpindah tempat dari titik A ke B.</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-slate-400">
+                                <i class="far fa-circle-play text-accent-gold"></i>
+                                <span>Rumput tetap hijau, Bumi tetap berputar.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-7 space-y-6">
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+                            <p class="text-slate-300 text-sm mb-4">Namun reaksi biologis manusia:</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 rounded-lg bg-red-950/20 border border-red-500/20 text-center">
+                                    <span class="text-xl">😭</span> <p class="text-xs font-semibold mt-1">Menangis</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-orange-950/20 border border-orange-500/20 text-center">
+                                    <span class="text-xl">😡</span> <p class="text-xs font-semibold mt-1">Marah</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/20 text-center">
+                                    <span class="text-xl">🎉</span> <p class="text-xs font-semibold mt-1">Meloncat Kegirangan</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-indigo-950/20 border border-indigo-500/20 text-center">
+                                    <span class="text-xl">🤯</span> <p class="text-xs font-semibold mt-1">Insomnia</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Interactive Trigger Inside Slide -->
+                            <div class="mt-6 pt-6 border-t border-white/5 text-center">
+                                <button id="btn-reveal-1" class="px-5 py-2.5 bg-accent-gold/20 hover:bg-accent-gold/30 border border-accent-gold/40 rounded-lg text-accent-gold-light text-xs font-semibold transition-all">
+                                    Ungkap Rahasianya <i class="fas fa-lock-open ml-1.5"></i>
+                                </button>
+                                <div id="reveal-text-1" class="hidden mt-4 text-sm text-slate-200 font-medium leading-relaxed bg-black/40 p-4 rounded-lg border border-accent-gold/10">
+                                    "Bukan bola yang bergerak, melainkan <span class="text-accent-gold font-bold">MAKNA</span> yang ditanamkan secara mendalam ke dalam benak manusia."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: FITRAH MANUSIA -->
+            <div class="slide" data-slide="3">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 rounded-full">FITRAH INSANI</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Manusia Selalu Mencari Makna</h3>
+                        <p class="text-slate-400 text-sm">Berbeda dengan entitas hewani yang dipandu insting murni.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="glass-card p-5 rounded-xl text-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-leaf text-slate-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-200">Hewan</h4>
+                            <p class="text-xs text-slate-400 mt-2">Makan karena lapar, berburu karena naluri, tidur demi istirahat.</p>
+                        </div>
+                        <div class="glass-card p-5 rounded-xl text-center border-accent-emerald/20 bg-accent-emerald/5">
+                            <div class="w-12 h-12 bg-accent-emerald/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-question text-accent-emerald"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-accent-emerald-light">Fitrah Manusia</h4>
+                            <p class="text-xs text-slate-300 mt-2">Selalu bertanya eksistensial: Siapa aku? Untuk apa aku hidup? Di mana kelompokku?</p>
+                        </div>
+                        <div class="glass-card p-5 rounded-xl text-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-dharmachakra text-slate-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-200">Eksistensi Luhur</h4>
+                            <p class="text-xs text-slate-400 mt-2">Manusia tidak akan pernah puas dengan pemenuhan kebutuhan biologis dasar saja.</p>
+                        </div>
+                    </div>
+                    <p class="text-center text-xs text-slate-400 italic">"Allah menanamkan dalam jiwa manusia ruang kosong spiritual yang butuh makna sejati."</p>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: KEBUTUHAN IDENTITAS -->
+            <div class="slide" data-slide="4">
+                <div class="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+                    <div class="space-y-4">
+                        <span class="text-xs font-bold text-accent-gold uppercase tracking-widest">Psikologi Sosial</span>
+                        <h3 class="text-3xl font-bold font-serif leading-snug">Ketika Fitrah Mencari Identitas</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Manusia selalu membutuhkan rasa memiliki (belonging). Tanpa jangkar identitas yang ditaruh pada keilahian, jiwa akan merekayasa jangkar artifisial lainnya.
+                        </p>
+                        <div class="p-4 bg-red-950/20 border border-red-500/20 rounded-xl text-xs text-red-200">
+                            <strong>Peringatan Esensial:</strong> Jika ruang identitas ini tidak dipenuhi oleh pengabdian kepada Allah, manusia akan menyerahkan loyalitas tertingginya pada identitas duniawi yang semu.
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-4 glass-card p-4 rounded-xl">
+                            <span class="text-2xl">👦</span>
+                            <div>
+                                <h4 class="font-semibold text-xs text-slate-400">Fase Anak</h4>
+                                <p class="text-sm font-medium text-slate-200">"Ini keluarga dan mainanku."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 glass-card p-4 rounded-xl">
+                            <span class="text-2xl">⚡</span>
+                            <div>
+                                <h4 class="font-semibold text-xs text-slate-400">Fase Remaja</h4>
+                                <p class="text-sm font-medium text-slate-200">"Ini sirkel, geng, dan komunitas ku."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 glass-card p-4 rounded-xl">
+                            <span class="text-2xl">🌍</span>
+                            <div>
+                                <h4 class="font-semibold text-xs text-slate-400">Fase Dewasa</h4>
+                                <p class="text-sm font-medium text-slate-200">"Ini korporasi, kabilah, bangsa, atau klubku."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: SUKU KE NEGARA -->
+            <div class="slide" data-slide="5">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-full">TRANSFORMASI SOSIAL</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Dari Suku Menjadi Negara Bangsa</h3>
+                        <p class="text-slate-400 text-sm">Wadah kebanggaan berubah seiring zaman, namun struktur mentalnya tetap sama.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl border-white/5 space-y-3">
+                            <h4 class="font-bold text-accent-gold text-sm flex items-center gap-2">
+                                <i class="fas fa-shield-alt"></i> Wadah Masa Lalu
+                            </h4>
+                            <ul class="text-xs text-slate-300 space-y-2">
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-gold text-[10px]"></i> Suku dan Kabilah</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-gold text-[10px]"></i> Batas Geografis Kerajaan</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-gold text-[10px]"></i> Klan Kesatria</li>
+                            </ul>
+                        </div>
+                        <div class="glass-panel p-6 rounded-2xl border-white/5 space-y-3">
+                            <h4 class="font-bold text-accent-emerald text-sm flex items-center gap-2">
+                                <i class="fas fa-globe"></i> Manifestasi Modern
+                            </h4>
+                            <ul class="text-xs text-slate-300 space-y-2">
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-emerald text-[10px]"></i> Nasionalisme Negara Bangsa</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-emerald text-[10px]"></i> Fanatisme Klub Sepak Bola</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-chevron-right text-accent-emerald text-[10px]"></i> Aliansi Ideologi Sekuler</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-900/50 rounded-xl text-center border border-white/5">
+                        <p class="text-xs text-slate-400">
+                            Akar emosinya sama: <strong>Keinginan merasa aman, kuat, terlindungi, dan memiliki hal mulia untuk dibanggakan.</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: KERAPUHAN IDENTITAS FANA -->
+            <div class="slide" data-slide="6">
+                <div class="grid md:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+                    <div class="md:col-span-6 space-y-4">
+                        <span class="text-xs font-bold text-accent-red uppercase tracking-widest">Evaluasi Tauhid</span>
+                        <h3 class="text-3xl font-bold font-serif leading-snug">Mengapa Bersandar Pada yang Fana Itu Rapuh?</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Islam tidak melarang mencintai tanah kelahiran. Namun, Islam melarang keras meletakkan identitas yang terus berubah tersebut sebagai berhala di dalam hati.
+                        </p>
+                        <div class="p-4 bg-accent-emerald/10 border border-accent-emerald/30 rounded-xl text-xs text-accent-emerald-light">
+                            <strong>Perspektif Abadi:</strong> Identitas berbasis iman bersifat transenden, tidak bergantung pada garis batas peta bumi buatan manusia.
+                        </div>
+                    </div>
+                    <div class="md:col-span-6 space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-4 rounded-xl bg-red-950/20 border border-red-500/20">
+                                <i class="fas fa-mountain text-red-400 mb-2"></i>
+                                <h4 class="font-semibold text-xs text-slate-200">Batas Geografis</h4>
+                                <p class="text-[11px] text-slate-400 mt-1">Tanah bisa terpecah & bergeser secara geopolitik.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-red-950/20 border border-red-500/20">
+                                <i class="fas fa-flag text-red-400 mb-2"></i>
+                                <h4 class="font-semibold text-xs text-slate-200">Bendera & Rezim</h4>
+                                <p class="text-[11px] text-slate-400 mt-1">Negara bisa runtuh, kepemimpinan silih berganti.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-emerald-950/20 border border-accent-emerald/20 col-span-2">
+                                <i class="fas fa-kaaba text-accent-emerald mb-2"></i>
+                                <h4 class="font-semibold text-xs text-accent-emerald-light">Tetapi Kebenaran Ilahi:</h4>
+                                <p class="text-[11px] text-slate-300 mt-1">Allah tetap Allah, Al-Qur'an tetap pedoman, dan Islam tetap jalan keselamatan yang kekal abadi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: KEHILANGAN IDENTITAS MODERN -->
+            <div class="slide" data-slide="7">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-full">KRISIS MODERNITAS</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Kosong di Tengah Kelimpahan Materi</h3>
+                        <p class="text-slate-400 text-sm">Ketika fisik terpuaskan, namun fitrah tetap kelaparan.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                            <h4 class="font-bold text-sm text-slate-200 mb-3 flex items-center gap-2">
+                                <i class="fas fa-box-open text-accent-gold"></i> Kepemilikan Fisik
+                            </h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Rumah megah, kendaraan mewah, gadget tercanggih, saldo melimpah. Segala urusan fisik tampak prima dan terjamin sepenuhnya.
+                            </p>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                            <h4 class="font-bold text-sm text-accent-red mb-3 flex items-center gap-2">
+                                <i class="fas fa-ghost text-accent-red"></i> Pengganti "Agama" (Substitusi)
+                            </h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Tanpa pedoman ilahi, manusia menyembah obsesi baru: Fanatisme selebritas, hiburan tanpa jeda, karir tiada batas, atau euforia festival olahraga.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="text-center font-serif italic text-accent-gold text-sm">
+                        "Ketika esensi spiritual diabaikan, hiburan harian dikonversi paksa menjadi berhala penyembahan emosi."
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: PIALA DUNIA SEBAGAI CERMIN -->
+            <div class="slide" data-slide="8">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 rounded-full">METAFORA CERMIN</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Piala Dunia Hanyalah Layar Cermin</h3>
+                        <p class="text-slate-400 text-sm">Ia memantulkan kejujuran kondisi hati kita yang terdalam.</p>
+                    </div>
+
+                    <!-- Interactive Comparison Box -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div onclick="playInteractionSound('thump')" class="glass-card p-5 rounded-2xl border-red-500/10 cursor-pointer hover:border-red-500/30">
+                            <span class="text-xs text-red-400 font-bold tracking-wider uppercase">Respons Terhadap Duniawi</span>
+                            <div class="mt-3 space-y-2 text-xs text-slate-300">
+                                <p class="flex justify-between"><span>Tim Nasional kalah:</span> <strong class="text-red-400">Sedih Mendalam</strong></p>
+                                <p class="flex justify-between"><span>Klub idola diejek:</span> <strong class="text-red-400">Marah Besar</strong></p>
+                                <p class="flex justify-between"><span>Pemain favorit cedera:</span> <strong class="text-red-400">Gelisah Semalaman</strong></p>
+                            </div>
+                        </div>
+                        <div onclick="playInteractionSound('bell')" class="glass-card p-5 rounded-2xl border-accent-emerald/10 cursor-pointer hover:border-accent-emerald/30">
+                            <span class="text-xs text-accent-emerald-light font-bold tracking-wider uppercase">Respons Terhadap Agama</span>
+                            <div class="mt-3 space-y-2 text-xs text-slate-300">
+                                <p class="flex justify-between"><span>Hukum Allah ditinggalkan:</span> <strong class="text-slate-500">Biasa Saja</strong></p>
+                                <p class="flex justify-between"><span>Al-Qur'an terabaikan:</span> <strong class="text-slate-500">Tidak Tergugah</strong></p>
+                                <p class="flex justify-between"><span>Umat terpecah belah:</span> <strong class="text-slate-500">Tidak Peduli</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-sm font-semibold text-accent-gold">
+                        "Di mana energi emosimu paling terkuras? Itulah sesembahan aslimu."
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: FITRAH MENGINGINKAN ALLAH -->
+            <div class="slide" data-slide="9">
+                <div class="grid md:grid-cols-12 gap-8 items-center max-w-4xl mx-auto">
+                    <div class="md:col-span-5 space-y-4">
+                        <span class="text-xs font-bold text-accent-emerald uppercase tracking-widest">Esensi Sejati</span>
+                        <h3 class="text-3xl font-bold font-serif leading-snug">Hati Hanya Tenang Bersama Pencipta</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Pencapaian duniawi bersifat terbatas, sedangkan keinginan fitrah manusia tidak terbatas. Mencari kebahagiaan tak berujung pada materi fana laksana meminum air asin.
+                        </p>
+                    </div>
+                    <div class="md:col-span-7">
+                        <div class="glass-panel p-6 rounded-2xl relative border-accent-emerald/20 bg-accent-emerald/5 text-center space-y-4">
+                            <i class="fas fa-star text-3xl text-accent-gold mb-2 pulse-gold"></i>
+                            <blockquote class="font-serif italic text-lg text-slate-200">
+                                "Ingatlah, hanya dengan mengingat Allah hati menjadi tenteram."
+                            </blockquote>
+                            <p class="text-xs text-accent-emerald-light font-semibold">Q.S. Ar-Ra'd: 28</p>
+                            <p class="text-xs text-slate-400">
+                                Trofi, medali, popularitas, dan kemenangan bersifat temporer. Ketika sorak-sorai stadion mereda, kehampaan akan kembali jika hati jauh dari-Nya.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: PERTANYAAN TERPENTING -->
+            <div class="slide" data-slide="10">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-full">UJI ORIENTASI</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Pertanyaan Introspektif Diri</h3>
+                        <p class="text-slate-400 text-sm">Fokusnya bukan pada larangan menonton bola, melainkan kesadaran orientasi hidup.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto custom-scroll pr-2">
+                        <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5 flex items-start gap-3">
+                            <span class="text-accent-gold font-bold">1</span>
+                            <p class="text-xs text-slate-300">Apa yang sesungguhnya menjadi poros utama dari putaran hidupku hari ini?</p>
+                        </div>
+                        <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5 flex items-start gap-3">
+                            <span class="text-accent-gold font-bold">2</span>
+                            <p class="text-xs text-slate-300">Identitas mana yang paling membanggakan bagiku saat berinteraksi di dunia luar?</p>
+                        </div>
+                        <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5 flex items-start gap-3">
+                            <span class="text-accent-gold font-bold">3</span>
+                            <p class="text-xs text-slate-300">Kehilangan apa yang paling memicu kepanikan dan kegelisahan luar biasa dalam diriku?</p>
+                        </div>
+                        <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5 flex items-start gap-3">
+                            <span class="text-accent-gold font-bold">4</span>
+                            <p class="text-xs text-slate-300">Apakah kontribusiku bagi tegaknya Islam sebanding dengan antusiasme mendukung klub olahraga?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: RENUNGAN AKHIR -->
+            <div class="slide" data-slide="11">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <span class="px-3 py-1 text-xs font-bold bg-accent-red/10 text-accent-red border border-accent-red/20 rounded-full">AKHIR PERJALANAN</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Batas Akhir Kehidupan</h3>
+                        <p class="text-slate-400 text-sm">Ketika seluruh panggung sandiwara duniawi digulung.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="glass-panel p-5 rounded-xl border-white/5 text-center space-y-2">
+                            <p class="text-xs text-slate-400">Pertanyaan Alam Kubur</p>
+                            <h4 class="font-bold text-accent-gold font-serif text-lg">❓ Man Rabbuka?</h4>
+                            <p class="text-[11px] text-slate-400">(Siapa Tuhanmu?)</p>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl border-white/5 text-center space-y-2">
+                            <p class="text-xs text-slate-400">Pertanyaan Alam Kubur</p>
+                            <h4 class="font-bold text-accent-gold font-serif text-lg">❓ Ma Dinuka?</h4>
+                            <p class="text-[11px] text-slate-400">(Apa agamamu?)</p>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl border-white/5 text-center space-y-2">
+                            <p class="text-xs text-slate-400">Pertanyaan Alam Kubur</p>
+                            <h4 class="font-bold text-accent-gold font-serif text-lg">❓ Man Nabiyyuka?</h4>
+                            <p class="text-[11px] text-slate-400">(Siapa Nabimu?)</p>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-center text-slate-400 leading-relaxed max-w-xl mx-auto">
+                        Anda dipersilakan menikmati rekreasi duniawi, menonton sepak bola, dan bersenang-senang secara proporsional. Namun, <strong>jangan sampai kehilangan kompas utama Anda.</strong> Hanya saat hidup bertumpu pada Allah, semua loyalitas akan berada pada harmoni yang benar.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 12: INTERACTIVE QUIZ ENGINE -->
+            <div class="slide" data-slide="12">
+                <div class="max-w-3xl mx-auto space-y-4" id="quiz-flow-container">
+                    
+                    <!-- Intro Quiz Screen -->
+                    <div id="quiz-intro-screen" class="text-center space-y-4">
+                        <div class="w-16 h-16 bg-accent-gold/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-graduation-cap text-3xl text-accent-gold"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif">Kuis Refleksi Fitrah</h3>
+                        <p class="text-slate-300 text-sm max-w-md mx-auto leading-relaxed">
+                            Uji pemahaman dan tingkat kedalaman refleksi Anda mengenai kaitan emosi, identitas fana, serta poros keimanan sejati.
+                        </p>
+                        <button onclick="startQuiz()" class="px-6 py-3 bg-accent-gold hover:bg-amber-500 text-dark-bg font-bold rounded-xl transition-all hover:scale-105">
+                            Mulai Kuis <i class="fas fa-play ml-2"></i>
+                        </button>
+                    </div>
+
+                    <!-- Question Play Screen -->
+                    <div id="quiz-play-screen" class="hidden space-y-4">
+                        <div class="flex justify-between items-center text-xs text-slate-400">
+                            <span id="quiz-progress-label">Pertanyaan 1 dari 4</span>
+                            <span id="quiz-score-label">Skor: 0</span>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="quiz-inner-bar" class="h-full bg-accent-gold transition-all duration-300" style="width: 25%"></div>
+                        </div>
+
+                        <!-- Question card -->
+                        <div class="glass-panel p-6 rounded-2xl border-white/5 space-y-4">
+                            <h4 id="quiz-question-text" class="text-base md:text-lg font-bold leading-relaxed text-slate-100">
+                                Pertanyaan kuis memuat di sini...
+                            </h4>
+                            
+                            <div class="space-y-2" id="quiz-options-container">
+                                <!-- Dynamic Options -->
+                            </div>
+                        </div>
+
+                        <!-- Feedback container -->
+                        <div id="quiz-feedback" class="hidden p-3 rounded-xl text-center text-xs font-semibold"></div>
+                    </div>
+
+                    <!-- Result Screen -->
+                    <div id="quiz-result-screen" class="hidden text-center space-y-4">
+                        <div class="w-20 h-20 rounded-full bg-accent-emerald/10 border-2 border-accent-emerald/30 flex items-center justify-center mx-auto relative overflow-hidden">
+                            <div class="absolute inset-0 bg-emerald-glow"></div>
+                            <i class="fas fa-trophy text-4xl text-accent-emerald relative z-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-serif">Kuis Selesai!</h3>
+                        <p class="text-slate-300 text-sm" id="quiz-summary-text">
+                            Skor Refleksi Anda: 100/100
+                        </p>
+                        <div class="p-4 bg-slate-900/60 rounded-xl max-w-md mx-auto text-xs text-slate-400 leading-relaxed" id="quiz-analysis">
+                            Analisis refleksi...
+                        </div>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="resetQuiz()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all">
+                                Coba Lagi <i class="fas fa-redo ml-1.5"></i>
+                            </button>
+                            <button onclick="changeSlide(1)" class="px-5 py-2.5 bg-accent-gold hover:bg-amber-500 text-dark-bg text-xs font-bold rounded-lg transition-all">
+                                Kembali ke Awal <i class="fas fa-home ml-1.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER PLAYER HUD -->
+    <footer class="w-full px-6 py-4 border-t border-white/5 bg-dark-bg/80 backdrop-blur-md relative z-10 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Navigasi Slide:</span>
+            <!-- Dots Indicators -->
+            <div class="flex items-center gap-1.5" id="dots-container">
+                <!-- Generating dynamically -->
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="prev-btn" class="px-4 py-2 rounded-lg border border-white/10 text-xs font-semibold hover:bg-white/5 transition-all text-slate-300 disabled:opacity-40 disabled:pointer-events-none">
+                <i class="fas fa-arrow-left mr-1.5"></i> Sebelumnya
+            </button>
+            <span id="current-slide-label" class="text-xs text-slate-400 font-mono">01 / 12</span>
+            <button id="next-btn" class="px-4 py-2 rounded-lg bg-white text-dark-bg text-xs font-bold hover:bg-slate-200 transition-all">
+                Berikutnya <i class="fas fa-arrow-right ml-1.5"></i>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // --- AUDIO / STATE MANAGER ---
+        let audioInitialized = false;
+        let isMuted = false;
+        let activeSlide = 1;
+        const totalSlides = 12;
+
+        // Synthesis instruments using Tone.js
+        let padSynth, chimeSynth, clickSynth, errorSynth, correctSynth;
+
+        // --- QUIZ GAME DATA ---
+        const quizData = [
+            {
+                q: "Ketika sebuah gol memicu air mata dan emosi tak terbendung, apa yang sebenarnya bergerak menurut modul ini?",
+                options: [
+                    "Bola fisik yang melintasi garis gawang",
+                    "Makna abstrak yang ditanamkan ke dalam pikiran",
+                    "Hormon adrenalin murni akibat aktivitas fisik",
+                    "Rantai kimiawi dari rumput lapangan"
+                ],
+                correct: 1,
+                analysis: "Tepat! Objek fisik hanyalah perantara. Otak kita merespons makna, arti, dan status emosi dari makna yang ditransmisikan oleh perantara tersebut."
+            },
+            {
+                q: "Apa perbedaan paling mendasar antara fitrah pencarian manusia dan insting hewani?",
+                options: [
+                    "Hewan memiliki sistem pencernaan yang jauh lebih kuat",
+                    "Hewan tidak hidup berkelompok atau berkumpul",
+                    "Manusia selalu digerakkan hasrat mencari makna transenden dan tujuan hidup yang luhur",
+                    "Manusia tidak memiliki rasa lapar fisik"
+                ],
+                correct: 2,
+                analysis: "Hebat! Hewan hidup berdasarkan insting bertahan hidup biologis murni. Sedangkan fitrah manusia selalu menuntut jawaban atas asal-usul dan tujuan hidup."
+            },
+            {
+                q: "Mengapa identitas yang dibangun di atas bangsa, kabilah, atau klub olahraga dinilai rapuh?",
+                options: [
+                    "Karena tidak mendatangkan imbalan finansial harian",
+                    "Karena bersifat fana, terus bergeser, dan dapat runtuh kapan saja",
+                    "Karena dilarang secara ekstrem oleh semua pemuka agama",
+                    "Karena tidak populer di kalangan ilmuwan modern"
+                ],
+                correct: 1,
+                analysis: "Luar biasa! Identitas duniawi terikat ruang, waktu, dan kekuasaan fana. Sandaran yang kokoh hanyalah Zat Yang Maha Kekal (Al-Baqi)."
+            },
+            {
+                q: "Apa kesimpulan utama cermin 'Piala Dunia' terhadap getaran hati kita?",
+                options: [
+                    "Kita wajib memboikot semua turnamen olahraga",
+                    "Kita harus beralih mendukung tim yang pasti menang",
+                    "Piala Dunia menyingkap kejujuran di mana loyalitas & cinta tertinggi kita diletakkan",
+                    "Kita harus melupakan kehidupan akhirat sepenuhnya"
+                ],
+                correct: 2,
+                analysis: "Sempurna! Reaksi emosional kita saat menyaksikan kemenangan fana dibanding keabaian aturan agama menunjukkan apa yang sebenarnya menduduki takhta tertinggi hati kita."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let selectedOptionIndex = null;
+        let hasAnsweredCurrent = false;
+
+        // --- STREAMING_CHUNK: Defining audio synthesizers... ---
+        async function initAudio() {
+            if (audioInitialized) return;
+            
+            await Tone.start();
+            
+            // Background warm pad synth
+            padSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: { attack: 1.5, decay: 0.5, sustain: 0.7, release: 2 }
+            }).toDestination();
+            padSynth.volume.value = -24;
+
+            // Chime bells for high feedback
+            chimeSynth = new Tone.MetalSynth({
+                frequency: 250,
+                envelope: { attack: 0.001, decay: 1.2, release: 0.2 },
+                harmonicity: 5.1,
+                resonance: 3000
+            }).toDestination();
+            chimeSynth.volume.value = -18;
+
+            // UI interface tick click
+            clickSynth = new Tone.MonoSynth({
+                oscillator: { type: "sine" },
+                filter: { Q: 1, type: "lowpass", frequency: 2000 },
+                envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.08 }
+            }).toDestination();
+            clickSynth.volume.value = -15;
+
+            // Correct response sound
+            correctSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }
+            }).toDestination();
+            correctSynth.volume.value = -18;
+
+            // Error thud sound
+            errorSynth = new Tone.MembraneSynth({
+                pitchDecay: 0.15,
+                octaves: 2,
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.3 }
+            }).toDestination();
+            errorSynth.volume.value = -10;
+
+            audioInitialized = true;
+            playChime(440); // Initial welcome note
+        }
+
+        // --- STREAMING_CHUNK: Defining audio utility triggers... ---
+        function playChime(freq = 440) {
+            if (!audioInitialized || isMuted) return;
+            try {
+                chimeSynth.triggerAttackRelease(freq, "8n");
+            } catch(e) {}
+        }
+
+        function playClick() {
+            if (!audioInitialized || isMuted) return;
+            try {
+                clickSynth.triggerAttackRelease("C5", "16n");
+            } catch(e) {}
+        }
+
+        function playChordTransition() {
+            if (!audioInitialized || isMuted) return;
+            try {
+                // Play chord based on current progress
+                const chords = [
+                    ["C3", "E3", "G3"],
+                    ["D3", "F3", "A3"],
+                    ["E3", "G3", "B3"],
+                    ["F3", "A3", "C4"],
+                    ["G3", "B3", "D4"],
+                    ["A3", "C4", "E4"],
+                    ["C4", "E4", "G4"]
+                ];
+                const activeChord = chords[activeSlide % chords.length];
+                padSynth.triggerAttackRelease(activeChord, "1.5n");
+            } catch(e) {}
+        }
+
+        function playInteractionSound(type) {
+            if (!audioInitialized || isMuted) return;
+            try {
+                if (type === 'thump') {
+                    errorSynth.triggerAttackRelease("C2", "8n");
+                } else if (type === 'bell') {
+                    chimeSynth.triggerAttackRelease(660, "4n");
+                }
+            } catch(e) {}
+        }
+
+        // --- STREAMING_CHUNK: Managing slider views and navigation HUD... ---
+        function renderDots() {
+            const container = document.getElementById('dots-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${i === activeSlide ? 'bg-accent-gold w-4' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dot.title = `Lompat ke Slide ${i}`;
+                dot.addEventListener('click', () => {
+                    playClick();
+                    changeSlideToDirect(i);
+                });
+                container.appendChild(dot);
+            }
+        }
+
+        function updateNavigationControls() {
+            // Label update
+            document.getElementById('current-slide-label').innerText = `${String(activeSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+            
+            // Buttons status
+            document.getElementById('prev-btn').disabled = (activeSlide === 1);
+            
+            // Modify 'Next' button text on final slide
+            const nextBtn = document.getElementById('next-btn');
+            if (activeSlide === totalSlides) {
+                nextBtn.innerHTML = `Selesai <i class="fas fa-check ml-1.5"></i>`;
+                nextBtn.className = "px-4 py-2 rounded-lg bg-accent-emerald text-dark-bg text-xs font-bold hover:bg-emerald-400 transition-all";
+            } else {
+                nextBtn.innerHTML = `Berikutnya <i class="fas fa-arrow-right ml-1.5"></i>`;
+                nextBtn.className = "px-4 py-2 rounded-lg bg-white text-dark-bg text-xs font-bold hover:bg-slate-200 transition-all";
+            }
+
+            // Calculations for navigation HUD progress bar
+            const percent = Math.round(((activeSlide - 1) / (totalSlides - 1)) * 100);
+            document.getElementById('top-progress-bar').style.width = `${percent}%`;
+            document.getElementById('top-progress-text').innerText = `${percent}%`;
+        }
+
+        function changeSlideToDirect(slideIndex) {
+            const currentSlideEl = document.querySelector(`.slide.active`);
+            if (currentSlideEl) {
+                currentSlideEl.classList.remove('active');
+                currentSlideEl.classList.add('exit');
+                setTimeout(() => {
+                    currentSlideEl.classList.remove('exit');
+                }, 600);
+            }
+
+            activeSlide = slideIndex;
+            const targetSlideEl = document.querySelector(`.slide[data-slide="${activeSlide}"]`);
+            if (targetSlideEl) {
+                targetSlideEl.classList.add('active');
+            }
+
+            renderDots();
+            updateNavigationControls();
+            playChordTransition();
+        }
+
+        function changeSlide(direction) {
+            playClick();
+            let target = activeSlide + direction;
+            if (target >= 1 && target <= totalSlides) {
+                changeSlideToDirect(target);
+            } else if (target > totalSlides) {
+                // If clicked "Selesai" at the end of slide, go to Quiz Slide
+                changeSlideToDirect(totalSlides);
+            }
+        }
+
+        // --- STREAMING_CHUNK: Setting up quiz interface engines... ---
+        function startQuiz() {
+            playClick();
+            document.getElementById('quiz-intro-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            
+            currentQuizIndex = 0;
+            quizScore = 0;
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            hasAnsweredCurrent = false;
+            selectedOptionIndex = null;
+            
+            const item = quizData[currentQuizIndex];
+            
+            // Labels
+            document.getElementById('quiz-progress-label').innerText = `Pertanyaan ${currentQuizIndex + 1} dari ${quizData.length}`;
+            document.getElementById('quiz-score-label').innerText = `Skor: ${quizScore}`;
+            
+            // Progress Bar
+            const percent = ((currentQuizIndex + 1) / quizData.length) * 100;
+            document.getElementById('quiz-inner-bar').style.width = `${percent}%`;
+
+            // Question Text
+            document.getElementById('quiz-question-text').innerText = item.q;
+
+            // Hide Feedback
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.className = "hidden p-3 rounded-xl text-center text-xs font-semibold";
+            feedbackEl.innerText = "";
+
+            // Populate options
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+            
+            item.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3.5 rounded-xl border border-white/5 bg-slate-800/40 hover:bg-slate-700/60 text-xs font-medium transition-all duration-200 flex justify-between items-center";
+                btn.innerHTML = `<span>${opt}</span> <i class="far fa-circle text-slate-500 text-[10px]"></i>`;
+                btn.addEventListener('click', () => selectQuizOption(idx));
+                container.appendChild(btn);
+            });
+        }
+
+        function selectQuizOption(idx) {
+            if (hasAnsweredCurrent) return;
+            selectedOptionIndex = idx;
+            hasAnsweredCurrent = true;
+
+            const item = quizData[currentQuizIndex];
+            const isCorrect = (idx === item.correct);
+            const container = document.getElementById('quiz-options-container');
+            const buttons = container.querySelectorAll('button');
+
+            // Sound
+            if (isCorrect) {
+                quizScore += 25;
+                document.getElementById('quiz-score-label').innerText = `Skor: ${quizScore}`;
+                if (audioInitialized && !isMuted) {
+                    correctSynth.triggerAttackRelease(["C4", "E4", "G4"], "4n");
+                }
+            } else {
+                if (audioInitialized && !isMuted) {
+                    errorSynth.triggerAttackRelease("C1", "2n");
+                }
+            }
+
+            // Visual State Update for Options
+            buttons.forEach((btn, buttonIdx) => {
+                btn.disabled = true;
+                if (buttonIdx === item.correct) {
+                    // Correct green styling
+                    btn.className = "w-full text-left p-3.5 rounded-xl border border-accent-emerald bg-accent-emerald/10 text-xs font-bold text-accent-emerald-light transition-all flex justify-between items-center";
+                    btn.innerHTML = `<span>${btn.innerText}</span> <i class="fas fa-check-circle text-accent-emerald text-sm"></i>`;
+                } else if (buttonIdx === selectedOptionIndex) {
+                    // Selected wrong red styling
+                    btn.className = "w-full text-left p-3.5 rounded-xl border border-accent-red bg-accent-red/10 text-xs font-bold text-accent-red transition-all flex justify-between items-center";
+                    btn.innerHTML = `<span>${btn.innerText}</span> <i class="fas fa-times-circle text-accent-red text-sm"></i>`;
+                } else {
+                    btn.className = "w-full text-left p-3.5 rounded-xl border border-white/5 bg-slate-900/10 text-xs text-slate-500 pointer-events-none";
+                }
+            });
+
+            // Feedback Panel
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackEl.className = "p-3 rounded-xl text-center text-xs font-semibold bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20";
+                feedbackEl.innerHTML = `<i class="fas fa-smile mr-1.5"></i> ${item.analysis}`;
+            } else {
+                feedbackEl.className = "p-3 rounded-xl text-center text-xs font-semibold bg-accent-red/10 text-accent-red border border-accent-red/20";
+                feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle mr-1.5"></i> Jawaban kurang tepat. ${item.analysis}`;
+            }
+
+            // Auto-next delay or next step indicator trigger
+            setTimeout(() => {
+                if (currentQuizIndex < quizData.length - 1) {
+                    currentQuizIndex++;
+                    loadQuizQuestion();
+                } else {
+                    showQuizResult();
+                }
+            }, 3500);
+        }
+
+        // --- STREAMING_CHUNK: Rendering quiz results... ---
+        function showQuizResult() {
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            document.getElementById('quiz-summary-text').innerHTML = `Nilai Refleksi Anda: <strong class="text-accent-gold text-xl">${quizScore} / 100</strong>`;
+
+            const analysisEl = document.getElementById('quiz-analysis');
+            if (quizScore === 100) {
+                analysisEl.innerText = "Sempurna! Anda memiliki kesadaran spiritual yang sangat utuh dan memahami betul pentingnya meletakkan Allah sebagai puncak tertinggi orientasi loyalitas di atas kesenangan duniawi.";
+            } else if (quizScore >= 75) {
+                analysisEl.innerText = "Hebat! Pemahaman Anda mengenai konsep fitrah sangat matang, hanya butuh sedikit refleksi harian tambahan agar kesadaran ini terpatri dalam setiap respons emosional Anda.";
+            } else {
+                analysisEl.innerText = "Refleksi yang bagus. Modul ini mengajarkan kita untuk waspada terhadap 'agama pengganti' modern. Coba pelajari ulang konsep fana versus abadi di beberapa slide sebelumnya.";
+            }
+
+            if (audioInitialized && !isMuted) {
+                correctSynth.triggerAttackRelease(["E4", "G4", "C5"], "1.5n");
+            }
+        }
+
+        function resetQuiz() {
+            playClick();
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-intro-screen').classList.remove('hidden');
+        }
+
+        // --- STREAMING_CHUNK: Attaching DOM Event Listeners and initialization... ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Active slide indicators
+            renderDots();
+            updateNavigationControls();
+
+            // Overlay Event
+            const overlay = document.getElementById('audio-overlay');
+            document.getElementById('start-btn').addEventListener('click', async () => {
+                await initAudio();
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            });
+
+            // Slide Navigation Events
+            document.getElementById('prev-btn').addEventListener('click', () => changeSlide(-1));
+            document.getElementById('next-btn').addEventListener('click', () => changeSlide(1));
+
+            // Custom UI revealing event (Slide 2)
+            document.getElementById('btn-reveal-1').addEventListener('click', () => {
+                const textEl = document.getElementById('reveal-text-1');
+                textEl.classList.toggle('hidden');
+                document.getElementById('btn-reveal-1').classList.add('hidden');
+                playChime(523); // Play interactive unlock sound
+            });
+
+            // Mute System Toggle
+            const muteBtn = document.getElementById('mute-btn');
+            muteBtn.addEventListener('click', () => {
+                isMuted = !isMuted;
+                if (isMuted) {
+                    muteBtn.innerHTML = `<i class="fas fa-volume-mute text-accent-red"></i>`;
+                } else {
+                    muteBtn.innerHTML = `<i class="fas fa-volume-up"></i>`;
+                    if (!audioInitialized) {
+                        initAudio();
+                    } else {
+                        playClick();
+                    }
+                }
+            });
+
+            // Complete Reset State button
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                playClick();
+                changeSlideToDirect(1);
+                resetQuiz();
+            });
+
+            // Adapt with Keyboard Left & Right Arrows
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changeSlide(1);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
